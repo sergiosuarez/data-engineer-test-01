@@ -63,10 +63,10 @@ This document captures the architectural choices behind the Airbnb analytics pla
 - **TODO**: describe metric definitions, optimization patterns, and benchmarking results.
 
 ## 6. Deployment & Monitoring
-- Docker Compose will spin up the warehouse, orchestration service, and pipeline container.
-- Airflow DAG (or alternative orchestrator) under `dags/` will trigger daily loads.
-- Monitoring placeholders stored in `monitoring/` (dashboards, alert rules).
-- **TODO**: finalize observability pipeline and uptime targets.
+- Docker Compose now provisions Postgres (`warehouse`), a utility container (`pipeline`) y un servicio `airflow` basado en `apache/airflow:2.9.1`. Airflow usa LocalExecutor apuntando al mismo Postgres.
+- DAG `dags/etl_pipeline.py` ejecuta `src.pipeline.orchestrator.run_pipeline` diariamente (`@daily`) con reintento y logging centralizado.
+- `monitoring/dashboards.json` documenta paneles/umbrales sugeridos para tiempo de ejecución, registros procesados y fallas de data quality.
+- **TODO**: finalizar observability pipeline y uptime targets (integrar dashboards reales + alertas automáticas).
 
 ## 7. Open Questions / Risks
 - Which warehouse backend best balances local reproducibility vs realism? (DuckDB vs Postgres)

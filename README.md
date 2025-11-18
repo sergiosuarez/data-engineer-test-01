@@ -87,6 +87,20 @@ Pytest cubre extracción, validación y transformaciones principales usando CSVs
 python -m pytest tests/test_extract_validate.py tests/test_transform.py
 ```
 
+## Docker & Airflow
+
+1. Copia `.env.example` → `.env` y ajusta credenciales + `AIRFLOW_FERNET_KEY`.
+2. Levanta Postgres + Airflow + contenedor utilitario:
+   ```bash
+   docker compose up warehouse airflow pipeline
+   ```
+3. Airflow quedará disponible en http://localhost:8080 (usuario/clave por defecto `admin/admin`). Activa el DAG `airbnb_etl_pipeline` para correr el pipeline diario.
+4. Los DAGs/artefactos se montan desde el repo, por lo que los cambios locales se reflejan al instante.
+
+## Monitoring
+
+- `monitoring/dashboards.json` define los paneles iniciales (duración del pipeline, registros procesados, fallas de data quality). Puedes usarlo como input para Grafana/Metabase o tu herramienta preferida.
+
 ## Contributing & Naming Conventions
 
 - Stick to PEP8-compliant Python code with type hints.

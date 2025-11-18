@@ -28,5 +28,36 @@ services:
       - warehouse
     # NOTE: In later phases this service will execute orchestrator or Airflow worker code.
 
+  airflow:
+    image: apache/airflow:2.9.1-python3.11
+    container_name: airflow
+    restart: unless-stopped
+    user: "${AIRFLOW_UID:-50000}:0"
+    environment:
+      AIRFLOW__CORE__EXECUTOR: LocalExecutor
+      AIRFLOW__CORE__LOAD_EXAMPLES: "False"
+      AIRFLOW__CORE__FERNET_KEY: "${AIRFLOW_FERNET_KEY:-thisisatempfernetkey1234567890}"
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@warehouse:5432/airbnb_dw
+      AIRFLOW__CORE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@warehouse:5432/airbnb_dw
+      PYTHONPATH: /opt/airflow
+    env_file:
+      - .env
+    volumes:
+      - ./:/opt/airflow
+      - airflow_logs:/opt/airflow/logs
+    ports:
+      - "8080:8080"
+    depends_on:
+      - warehouse
+    command:
+      - bash
+      - -c
+      - >
+        airflow db migrate &&
+        (airflow users create --username admin --firstname Admin --lastname User --role Admin --email admin@example.com --password admin || true) &&
+        airflow scheduler &
+        exec airflow webserver
+
 volumes:
   warehouse_data:
+  airflow_logs:

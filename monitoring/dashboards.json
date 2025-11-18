@@ -1,0 +1,56 @@
+{
+  "dashboards": [
+    {
+      "name": "Pipeline Health",
+      "description": "Track daily ETL execution metrics",
+      "widgets": [
+        {
+          "title": "Execution Duration",
+          "metric": "pipeline_duration_seconds",
+          "thresholds": {
+            "warning": 600,
+            "critical": 1200
+          }
+        },
+        {
+          "title": "Records Processed",
+          "metric": "records_processed",
+          "thresholds": {
+            "warning": 1000,
+            "critical": 500
+          }
+        },
+        {
+          "title": "Data Quality Failures",
+          "metric": "dq_failures",
+          "thresholds": {
+            "warning": 1,
+            "critical": 5
+          }
+        }
+      ]
+    },
+    {
+      "name": "Data Quality Overview",
+      "description": "Monitors validations emitted by src/pipeline/validate.py",
+      "widgets": [
+        {
+          "title": "Valid Datasets",
+          "metric": "valid_datasets",
+          "thresholds": {
+            "warning": 1,
+            "critical": 0
+          }
+        },
+        {
+          "title": "Invalid Datasets",
+          "metric": "invalid_datasets",
+          "thresholds": {
+            "warning": 1,
+            "critical": 3
+          }
+        }
+      ]
+    }
+  ]
+}

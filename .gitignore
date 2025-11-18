@@ -52,6 +52,7 @@ log/
 # Output files
 output/*
 *.json
+!monitoring/*.json
 *.csv.gz
 *.parquet
 
