@@ -1,14 +1,20 @@
 -- Airbnb Analytics Dimensional Model
 -- Schema: analytics
+-- Author: Sergio Suarez
+-- Date: 2025-11-18
+-- Description: This script creates the dimensional model schema for Airbnb analytics,
+-- including dimension and fact tables designed for efficient querying and analysis.
+-- PostgreSQL syntax is used for compatibility with common data warehousing solutions.
 
 CREATE SCHEMA IF NOT EXISTS analytics;
 SET search_path TO analytics;
 
--- =============================================================
+
 -- Dimension: Date
+-- Grain: one record per date
 -- =============================================================
 CREATE TABLE IF NOT EXISTS dim_date (
-    date_key            INTEGER PRIMARY KEY, -- Format YYYYMMDD for fast joins
+    date_key            INTEGER PRIMARY KEY, -- YYYYMMDD format
     full_date           DATE NOT NULL UNIQUE,
     day_of_week         SMALLINT NOT NULL CHECK (day_of_week BETWEEN 1 AND 7),
     day_name            VARCHAR(12) NOT NULL,
@@ -23,8 +29,9 @@ CREATE TABLE IF NOT EXISTS dim_date (
 
 CREATE INDEX IF NOT EXISTS idx_dim_date_full_date ON dim_date (full_date);
 
--- =============================================================
+
 -- Dimension: Property Type (Type 1)
+-- Grain: one record Per property type
 -- =============================================================
 CREATE TABLE IF NOT EXISTS dim_property_type (
     property_type_key   BIGSERIAL PRIMARY KEY,
@@ -39,8 +46,9 @@ CREATE TABLE IF NOT EXISTS dim_property_type (
 CREATE UNIQUE INDEX IF NOT EXISTS idx_dim_property_type_name
     ON dim_property_type (property_type_name);
 
--- =============================================================
+
 -- Dimension: Neighborhood (Type 1)
+-- Grain: One record per neighorhood
 -- =============================================================
 CREATE TABLE IF NOT EXISTS dim_neighborhood (
     neighborhood_key    BIGSERIAL PRIMARY KEY,
@@ -57,8 +65,9 @@ CREATE TABLE IF NOT EXISTS dim_neighborhood (
 CREATE UNIQUE INDEX IF NOT EXISTS idx_dim_neighborhood_name
     ON dim_neighborhood (neighborhood_name, city, state);
 
--- =============================================================
+
 -- Dimension: Host (SCD Type 2)
+--  Grain: one recordd per host
 -- =============================================================
 CREATE TABLE IF NOT EXISTS dim_host (
     host_key                BIGSERIAL PRIMARY KEY,
@@ -66,7 +75,7 @@ CREATE TABLE IF NOT EXISTS dim_host (
     host_name               TEXT,
     host_since              DATE,
     host_response_time      TEXT,
-    host_response_rate      NUMERIC(5,2), -- stored as percentage 0-100
+    host_response_rate      NUMERIC(5,2), -- As percentage 0-100 or %
     host_is_superhost       BOOLEAN,
     host_listings_count     INTEGER,
     host_total_listings     INTEGER,
@@ -85,8 +94,9 @@ ALTER TABLE dim_host
 CREATE INDEX IF NOT EXISTS idx_dim_host_natural
     ON dim_host (host_id, is_current);
 
--- =============================================================
+
 -- Dimension: Listing (SCD Type 2)
+-- Grain: one record per listing
 -- =============================================================
 CREATE TABLE IF NOT EXISTS dim_listing (
     listing_key            BIGSERIAL PRIMARY KEY,
@@ -156,9 +166,11 @@ CREATE INDEX IF NOT EXISTS idx_fact_listing_host
 CREATE INDEX IF NOT EXISTS idx_fact_listing_neighborhood
     ON fact_listing_daily_metrics (neighborhood_key, date_key);
 
--- =============================================================
+-- ==========================================================================================================================
 -- Fact: Review Events (optional, one per review)
--- =============================================================
+-- Grain: one record per review
+-- Description: This fact table captures individual review events associated with listings. I think quality of reviews can impact listing performance.
+-- ==========================================================================================================================
 CREATE TABLE IF NOT EXISTS fact_review (
     review_key           BIGSERIAL PRIMARY KEY,
     review_id            BIGINT NOT NULL,
@@ -178,8 +190,3 @@ CREATE UNIQUE INDEX IF NOT EXISTS uq_fact_review_business
 
 CREATE INDEX IF NOT EXISTS idx_fact_review_listing_date
     ON fact_review (listing_key, date_key);
-
--- =============================================================
--- Supporting views or staging tables can be layered above this
--- model as needed in downstream phases.
--- =============================================================
