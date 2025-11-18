@@ -77,6 +77,7 @@ Commit messages will mirror these milestones so reviewers can follow the evoluti
    - Validar y generar `output/data_quality_report.json` → `python -m src.pipeline.validate`
    - Transformaciones (dimensiones + hechos en memoria) → `python -m src.pipeline.transform`
    - Pipeline completo Extract→Validate→Transform→Load (requiere Postgres arriba) → `python -m src.pipeline.load`
+   - Orquestador lineal (Extract→Load + logging consolidado) → `python -m src.pipeline.orchestrator`
 
 ## Testing
 
@@ -94,8 +95,8 @@ python -m pytest tests/test_extract_validate.py tests/test_transform.py
 
 ## Next Steps
 
-- Redactar queries analíticas (`sql/queries/*.sql`) para pricing, hosts y oportunidades de mercado.
-- Integrar orquestación/monitoring (Airflow DAG + dashboards) y documentar el flujo completo.
+- Integrar orquestación avanzada/monitoring (Airflow DAG + dashboards) y documentar el flujo completo.
 - Preparar contenedores y pipelines automáticos para ejecutar Extract→Load en ambiente reproducible.
+- Añadir métricas de observabilidad y alertas (Fase 7).
 
 Stay tuned—este README seguirá creciendo con instrucciones de ejecución end-to-end y artefactos finales.

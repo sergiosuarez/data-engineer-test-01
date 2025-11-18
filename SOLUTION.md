@@ -55,7 +55,11 @@ This document captures the architectural choices behind the Airbnb analytics pla
 - **TODO**: definir severidades y canalizar alertas hacia el componente de monitoring en Fase 7.
 
 ## 5. Analytics Layer
-- SQL queries under `sql/queries/` will address pricing, hosts, and market opportunity use cases.
+- SQL queries under `sql/queries/` address pricing, hosts, and market opportunity use cases:
+  - `01_pricing_intelligence.sql`: compara precio actual vs peers (neighborhood + room_type) y clasifica listings como underpriced/fair/overpriced.
+  - `02_host_performance.sql`: ranking con score ponderado (40% revenue, 25% rating, 20% volumen reviews, 15% tamaño de portafolio) y breakdown JSON.
+  - `03_market_opportunities.sql`: calcula demand_score (ocupación + reviews) y supply_score (cantidad de listings) para recomendar acciones por vecindario.
+- Orchestrator: `src/pipeline/orchestrator.py` ejecuta todas las etapas secuenciales con logging consolidado y manejo de errores.
 - **TODO**: describe metric definitions, optimization patterns, and benchmarking results.
 
 ## 6. Deployment & Monitoring
