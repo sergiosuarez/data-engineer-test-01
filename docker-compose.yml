@@ -1,0 +1,32 @@
+version: "3.9"
+
+services:
+  warehouse:
+    image: postgres:15-alpine
+    container_name: airbnb_dw
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: airbnb_dw
+      POSTGRES_USER: airflow
+      POSTGRES_PASSWORD: airflow
+    ports:
+      - "5432:5432"
+    volumes:
+      - warehouse_data:/var/lib/postgresql/data
+
+  pipeline:
+    build:
+      context: .
+    container_name: pipeline_runner
+    command: ["sleep", "infinity"]
+    env_file:
+      - .env
+    volumes:
+      - ./:/opt/project
+    working_dir: /opt/project
+    depends_on:
+      - warehouse
+    # NOTE: In later phases this service will execute orchestrator or Airflow worker code.
+
+volumes:
+  warehouse_data:

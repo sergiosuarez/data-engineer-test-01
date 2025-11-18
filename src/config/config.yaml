@@ -1,0 +1,33 @@
+paths:
+  raw_data_dir: "${RAW_DATA_DIR:-data}"
+  output_dir: "${OUTPUT_DIR:-output}"
+  logs_dir: "${LOG_DIR:-logs}"
+
+sources:
+  listings:
+    file: listings.csv
+    primary_key: listing_id
+    date_column: last_scraped
+  reviews:
+    file: reviews.csv
+    primary_key: id
+    date_column: date
+
+warehouse:
+  uri: "${WAREHOUSE_URI:-postgresql+psycopg2://airflow:airflow@localhost:5432/airbnb_dw}"
+  schema: analytics
+  staging_schema: staging
+  load_batch_size: 5000
+
+validation:
+  expectations:
+    - name: price_positive
+      column: price
+      condition: "> 0"
+    - name: unique_listing
+      column: listing_id
+      condition: unique
+
+orchestration:
+  schedule: daily
+  default_start_date: 2025-11-18

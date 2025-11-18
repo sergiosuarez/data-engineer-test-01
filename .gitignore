@@ -45,12 +45,12 @@ venv.bak/
 .env.*.local
 
 # Logs
-logs/
+logs/*
 *.log
 log/
 
 # Output files
-output/
+output/*
 *.json
 *.csv.gz
 *.parquet
