@@ -4,10 +4,11 @@ This repository hosts an end-to-end analytics pipeline that explores Airbnb list
 
 ## Status
 
-- ✅ Repository skeleton + documentation scaffolding
+- ✅ Repository skeleton + documentación scaffolding
 - ✅ Dimensional model, DB connector y utilidades de logging
 - ✅ Extract & Validate con Pandera y reporte JSON
-- ⏳ Próximo: transform & load, analytical SQL, orquestación y monitoring
+- ✅ Transform & Load: KPIs calculados, SCD2 para hosts/listings y carga append-only para facts
+- ⏳ Próximo: analytical SQL, orquestación y monitoring
 
 ## Dataset
 
@@ -74,10 +75,16 @@ Commit messages will mirror these milestones so reviewers can follow the evoluti
 4. **Execution**:
    - Extraer datasets locales → `python -m src.pipeline.extract`
    - Validar y generar `output/data_quality_report.json` → `python -m src.pipeline.validate`
+   - Transformaciones (dimensiones + hechos en memoria) → `python -m src.pipeline.transform`
+   - Pipeline completo Extract→Validate→Transform→Load (requiere Postgres arriba) → `python -m src.pipeline.load`
 
 ## Testing
 
-A `tests/` package is reserved for unit tests (pytest). As modules land we will ensure they are covered with realistic fixtures referencing small CSV snippets.
+Pytest cubre extracción, validación y transformaciones principales usando CSVs sintéticos. Ejecutar:
+
+```bash
+python -m pytest tests/test_extract_validate.py tests/test_transform.py
+```
 
 ## Contributing & Naming Conventions
 
@@ -87,8 +94,8 @@ A `tests/` package is reserved for unit tests (pytest). As modules land we will 
 
 ## Next Steps
 
-- Construir transformaciones + carga con manejo SCD2 (`src/pipeline/transform.py`, `src/pipeline/load.py`).
 - Redactar queries analíticas (`sql/queries/*.sql`) para pricing, hosts y oportunidades de mercado.
 - Integrar orquestación/monitoring (Airflow DAG + dashboards) y documentar el flujo completo.
+- Preparar contenedores y pipelines automáticos para ejecutar Extract→Load en ambiente reproducible.
 
 Stay tuned—este README seguirá creciendo con instrucciones de ejecución end-to-end y artefactos finales.

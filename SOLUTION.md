@@ -37,6 +37,14 @@ This document captures the architectural choices behind the Airbnb analytics pla
   - Python (Pandas/Polars TBD) for transformations.
   - Pandera for validation, SQLAlchemy for DB ops.
   - Docker + Compose for reproducible execution.
+- Transform stage (Fase 5):
+  - Limpieza de precios (strip de símbolos, coerción numérica), homogenización de booleanos (`instant_bookable`, `host_is_superhost`), normalización de `amenities` como hash textual.
+  - KPIs calculados: `occupancy_rate = 1 - availability/365`, `estimated_revenue = price * occupancy * 30`, `price_tier` con buckets [budget, standard, premium, luxury].
+  - Construcción de dimensiones conformadas en memoria (host, listing, neighborhood, property_type, date) usando los datos crudos + reglas de negocio.
+- Load stage:
+  - `src/pipeline/load.py` usa staging tables + SQL generado dinámicamente para ejecutar SCD Type 2 en `dim_host` y `dim_listing` (detecta cambios con `COALESCE(lhs::text) IS DISTINCT FROM ...`, cierra registros vigentes y genera nuevas versiones).
+  - Dimensiones Type 1 se actualizan vía `TRUNCATE + INSERT` y los hechos son append-only.
+  - `load_all` orquesta todo el ciclo y puede ejecutarse como entrypoint (`python -m src.pipeline.load`).
 - **TODO**: include diagrams and orchestration design notes.
 
 ## 4. Data Quality Strategy
