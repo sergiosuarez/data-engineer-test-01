@@ -40,9 +40,11 @@ This document captures the architectural choices behind the Airbnb analytics pla
 - **TODO**: include diagrams and orchestration design notes.
 
 ## 4. Data Quality Strategy
-- Schema validation, business rules (price thresholds, uniqueness, referential checks).
-- Output artifact: `output/data_quality_report.json` summarizing each run.
-- **TODO**: document severity levels, alerting thresholds, and remediation playbooks.
+- Implemented Pandera schemas for `listings` y `reviews`:
+  - Checks de unicidad (`id`), dominios (`room_type`), rangos (`price >= 0`, `availability_365 <= 365`), y fechas válidas.
+  - Reviews exige `listing_id > 0` y `date` no nulo.
+- El módulo `src/pipeline/validate.py` produce `output/data_quality_report.json` con resumen de datasets válidos/ inválidos y detalle de fallas (columna, check, valor problemático).
+- **TODO**: definir severidades y canalizar alertas hacia el componente de monitoring en Fase 7.
 
 ## 5. Analytics Layer
 - SQL queries under `sql/queries/` will address pricing, hosts, and market opportunity use cases.

@@ -4,8 +4,10 @@ This repository hosts an end-to-end analytics pipeline that explores Airbnb list
 
 ## Status
 
-- ✅ Repository skeleton created (folders, placeholder configs, docs draft)
-- ⏳ Upcoming: dimensional model, ETL pipeline modules, analytical SQL, orchestration and monitoring assets
+- ✅ Repository skeleton + documentation scaffolding
+- ✅ Dimensional model, DB connector y utilidades de logging
+- ✅ Extract & Validate con Pandera y reporte JSON
+- ⏳ Próximo: transform & load, analytical SQL, orquestación y monitoring
 
 ## Dataset
 
@@ -69,7 +71,9 @@ Commit messages will mirror these milestones so reviewers can follow the evoluti
    ```
 2. **Environment variables**: copy `.env.example` to `.env` and fill in warehouse credentials plus pipeline defaults.
 3. **Configuration**: adjust `src/config/config.yaml` to point to the correct raw data paths, warehouse schema, and output folders.
-4. **Execution**: upcoming phases will expose CLI entrypoints under `src/pipeline/`. For now, use the roadmap above as guidance.
+4. **Execution**:
+   - Extraer datasets locales → `python -m src.pipeline.extract`
+   - Validar y generar `output/data_quality_report.json` → `python -m src.pipeline.validate`
 
 ## Testing
 
@@ -83,8 +87,8 @@ A `tests/` package is reserved for unit tests (pytest). As modules land we will 
 
 ## Next Steps
 
-- Flesh out the dimensional model (`sql/schema.sql`).
-- Document modeling rationale and SCD approach inside `SOLUTION.md`.
-- Start implementing reusable utilities for DB access and logging.
+- Construir transformaciones + carga con manejo SCD2 (`src/pipeline/transform.py`, `src/pipeline/load.py`).
+- Redactar queries analíticas (`sql/queries/*.sql`) para pricing, hosts y oportunidades de mercado.
+- Integrar orquestación/monitoring (Airflow DAG + dashboards) y documentar el flujo completo.
 
-Stay tuned—this README will be expanded with concrete run instructions and architecture diagrams as the pipeline matures.
+Stay tuned—este README seguirá creciendo con instrucciones de ejecución end-to-end y artefactos finales.
